@@ -1,9 +1,9 @@
 #include <iostream>
-#include "uuid4.h"
 #include <fstream>
 #include <chrono>
 #include <vector>
 #include <algorithm>
+#include "uuid4.h"
 
 #define MAX_UUIDS_TEST 100000
 
@@ -71,7 +71,7 @@ int main()
 	return 0;
 }
 /*
-Test Took: 194370 milliseconds
+Test Took: 194370 milliseconds (3.2395 minutes)
 100000 UUIDs Tested
 Found 0 Repeated UUIDs.
 */
