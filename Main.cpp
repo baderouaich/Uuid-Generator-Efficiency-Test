@@ -1,13 +1,54 @@
+#if _MSVC_LANG >= 201703 || __cplusplus >= 201703
 #include <iostream>
 #include <fstream>
 #include <chrono>
 #include <vector>
 #include <algorithm>
-#include "uuid4.h"
+#include <stdlib.h>
+#include <stdio.h>
+#include <windows.h>
+using namespace std;
 
-#define MAX_UUIDS_TEST 100000
+#include "uuid4/uuid4.h"
+
+#define MAX_UUIDS_TEST 100
+
+unsigned long long m_RepeatedUUIDs = 0ULL;
+void TestUUIDsRepetition()
+{
+
+}
 
 
+int main()
+{
+	auto t1 = std::chrono::system_clock::now();
+	TestUUIDsRepetition();
+	auto t2 = std::chrono::system_clock::now();
+
+	cout <<
+		"Test Took: " << chrono::duration_cast<std::chrono::seconds>(t2 - t1).count() << " seconds \n" << 
+		MAX_UUIDS_TEST << " UUIDs Tested\n" <<
+		"Found " << m_RepeatedUUIDs << " Repeated UUIDs." <<
+		std::endl;
+
+	cin.ignore();
+	cin.get();
+	return 0;
+}
+
+#else
+#error Enable C++17 or remove this macro check
+#endif
+
+/*
+Test Took: 194370 milliseconds (3.2395 minutes)
+100000 UUIDs Tested
+Found 0 Repeated UUIDs.
+*/
+
+
+/*
 std::string generateUUID()
 {
 	char* uuid = new char[UUID4_LEN];
@@ -18,9 +59,7 @@ std::string generateUUID()
 	return uuidStr;
 }
 
-/*
-* Tests efficiancy of the UUID generator
-*/
+
 void TestUUIDsRepetition()
 {
 	auto time1 = std::chrono::system_clock::now();
@@ -58,20 +97,10 @@ void TestUUIDsRepetition()
 
 	auto time2 = std::chrono::system_clock::now();
 	auto diff = time2 - time1;
-	std::cout << "Test Took: "<< std::chrono::duration_cast<std::chrono::milliseconds>(diff).count() <<
-		" milliseconds \n"<< MAX_UUIDS_TEST  << " UUIDs Tested\n"
+	std::cout << "Test Took: " << std::chrono::duration_cast<std::chrono::milliseconds>(diff).count() <<
+		" milliseconds \n" << MAX_UUIDS_TEST << " UUIDs Tested\n"
 		<< "Found " << numRepeated << " Repeated UUIDs." << std::endl;
 
 	vUUIDs.clear();
 }
-
-int main()
-{
-	TestUUIDsRepetition();
-	return 0;
-}
-/*
-Test Took: 194370 milliseconds (3.2395 minutes)
-100000 UUIDs Tested
-Found 0 Repeated UUIDs.
 */
