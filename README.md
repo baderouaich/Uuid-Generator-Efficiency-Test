@@ -1,26 +1,21 @@
-﻿# UUID Generator Efficiency Test
-- Latest Test: <strong>Release x64</strong>
-
----------------------------------------------------------------
-                            CPU Info
----------------------------------------------------------------
-Vendor String       GenuineIntel
-Vendor              Intel
-Brand String        Intel(R) Core(TM)2 Duo CPU     E6550  @ 2.33GHz
-Frequency           2327 MHz
-Physical CPUs       1
-CPU Cores           2
-Logical CPUs        2
-CPU Config          Single CPU, Dual Core, No Hyperthreading
----------------------------------------------------------------
-                            RAM Info
----------------------------------------------------------------
-Capacity    MemoryType  Speed  TypeDetail
-2147483648  21          800    128
-2147483648  21          800    128
-2147483648  21          800    128
-2147483648  21          800    128
-4194304     11                 4096
+﻿# UUID Generator Efficiency Test<br>
+ 
+CPU Info<br>
+Vendor String   :    GenuineIntel<br>
+Vendor          :   Intel<br>
+Brand String    :   Intel(R) Core(TM)2 Duo CPU     E6550  @ 2.33GHz<br>
+Frequency       :   2327 MHz<br>
+Physical CPUs   :   1<br>
+CPU Cores       :   2<br>
+Logical CPUs    :   2<br>
+CPU Config      :   Single CPU, Dual Core, No Hyperthreading<br><br>
+RAM Info<br>
+Capacity    MemoryType  Speed  TypeDetail<br>
+2147483648  21          800    128<br>
+2147483648  21          800    128<br>
+2147483648  21          800    128<br>
+2147483648  21          800    128<br>
+4194304     11                 4096<br>
 
 <br>
 <pre>
