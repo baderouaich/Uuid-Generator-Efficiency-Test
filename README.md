@@ -1,24 +1,5 @@
 ﻿# UUID Generator Efficiency Test<br>
- 
-CPU Info<br>
-Vendor String   :    GenuineIntel<br>
-Vendor          :   Intel<br>
-Brand String    :   Intel(R) Core(TM)2 Duo CPU     E6550  @ 2.33GHz<br>
-Frequency       :   2327 MHz<br>
-Physical CPUs   :   1<br>
-CPU Cores       :   2<br>
-Logical CPUs    :   2<br>
-CPU Config      :   Single CPU, Dual Core, No Hyperthreading<br><br>
-RAM Info<br>
-Capacity    MemoryType  Speed  TypeDetail<br>
-2147483648  21          800    128<br>
-2147483648  21          800    128<br>
-2147483648  21          800    128<br>
-2147483648  21          800    128<br>
-4194304     11                 4096<br>
-
-<br>
-<pre>
+ <pre>
 Latest test on 05-05-2020 11:26pm
 Build Type:			Release x64
 Optimization:		ON
@@ -35,3 +16,20 @@ Memory Allocated due test: Each uuid has 37 bytes, so
 
 Approximately the entire test takes ~1GO of memory
 </pre> 
+<br>
+CPU Info<br>
+Vendor String   :    GenuineIntel<br>
+Vendor          :   Intel<br>
+Brand String    :   Intel(R) Core(TM)2 Duo CPU     E6550  @ 2.33GHz<br>
+Frequency       :   2327 MHz<br>
+Physical CPUs   :   1<br>
+CPU Cores       :   2<br>
+Logical CPUs    :   2<br>
+CPU Config      :   Single CPU, Dual Core, No Hyperthreading<br><br>
+RAM Info<br>
+Capacity    MemoryType  Speed  TypeDetail<br>
+2147483648  21          800    128<br>
+2147483648  21          800    128<br>
+2147483648  21          800    128<br>
+2147483648  21          800    128<br>
+4194304     11                 4096<br>
