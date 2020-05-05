@@ -30,29 +30,15 @@ instead of N threads splitting up the loop and completing all iterations just on
 #include <fstream>
 #include <chrono>
 #include <vector>
-#include <mutex>
 #include <string>
-#include <algorithm> // std::binary_search
-#include <omp.h> //#pragma omp parallel for reduction(+:m_RepeatedUUIDs) private(i) private(j)
+#include <unordered_set> 
 using namespace std;
 #include "uuid4/uuid4.h"
 
-mutex guard;
+#define MAX_UUIDS_TEST 10000000
+#define SAVE_UUIDS_TO_File 0
 
-#define LOCK guard.lock();
-#define UNLOCK guard.unlock();
-//optimize
-#define RUN_IN_PARALLEL 0
-#define MAX_UUIDS_TEST 1000000
-#define SAVE_UUIDS_TO_File
-#if RUN_IN_PARALLEL
-#define LOCK guard.lock();
-#define UNLOCK guard.unlock();
-#else
-#define LOCK 
-#define UNLOCK 
-#endif
-unsigned int m_RepeatedUUIDs = 0ULL;
+unordered_set<const char*> m_RepeatedUUIDs;
 vector <const char*> vecUUIDs;
 
 void GenerateUUIDs()
@@ -60,34 +46,18 @@ void GenerateUUIDs()
 	vecUUIDs.reserve(MAX_UUIDS_TEST);
 	uuid4_init();
 
-#if RUN_IN_PARALLEL
-#pragma omp parallel for
-#endif
 	for (int i = 0; i < MAX_UUIDS_TEST; i++)
 	{
-		LOCK
 		char* uuid = new char[UUID4_LEN];
 		uuid4_generate(uuid);
 		vecUUIDs.emplace_back(uuid);
-		UNLOCK
 	}
 }
 
 void CheckRepititions()
 {
-#if RUN_IN_PARALLEL
-	#pragma omp parallel for
-#endif	
-	for (int i = 0; i < MAX_UUIDS_TEST; i++)
-#if RUN_IN_PARALLEL
-	#pragma omp parallel for
-#endif
-		for (int j = i + 1; j < MAX_UUIDS_TEST; j++)
-		{
-			LOCK
-				m_RepeatedUUIDs += vecUUIDs[i] == vecUUIDs[j];
-			UNLOCK
-		}
+	for (const char* uuid : vecUUIDs)
+		m_RepeatedUUIDs.insert(uuid);
 }
 
 void TestUUIDsRepetition()
@@ -96,22 +66,14 @@ void TestUUIDsRepetition()
 	CheckRepititions();
 }
 
-#ifdef SAVE_UUIDS_TO_File
+#if SAVE_UUIDS_TO_File
 void SaveUUIDsToFile(const char* filename)
 {
 	ofstream ofs(filename, ios::app | ios::out);
 	if (ofs)
 	{
-#if RUN_IN_PARALLEL
-	#pragma omp parallel for
-#endif		
 		for (const char* uuid : vecUUIDs)
-		{
-			LOCK
 			ofs << uuid << '\n';
-			delete[] uuid;
-			UNLOCK
-		}
 		ofs.close();
 	}
 }
@@ -125,23 +87,27 @@ int main()
 	auto t2 = std::chrono::system_clock::now();
 
 	cout <<
-		"Took: " << chrono::duration_cast<std::chrono::seconds>(t2 - t1).count() << " seconds \n" << 
+		"Took: " << chrono::duration_cast<std::chrono::milliseconds>(t2 - t1).count() <<
+		" milliseconds \n" << 
 		MAX_UUIDS_TEST << " UUIDs Tested\n" <<
-		m_RepeatedUUIDs <<" Repeated UUIDs Found.\n" <<
+		vecUUIDs.size() - m_RepeatedUUIDs.size() <<
+		" Repeated UUIDs Found.\n" <<
 		"Test Finished.\n";
 
 
-#ifdef SAVE_UUIDS_TO_File
+#if SAVE_UUIDS_TO_File
 	SaveUUIDsToFile((to_string(MAX_UUIDS_TEST) + string("-uuids.txt")).c_str());
 #endif
 
 
-#ifndef SAVE_UUIDS_TO_File
+
+
 	cout << "Press anything to clean\n";
 	cin.get();
-	for (const char* uuid : vecUUIDs)
-		delete[] uuid;
-#endif
+	for (const char* uuid : m_RepeatedUUIDs)
+		if(uuid) delete[] uuid;
+	vecUUIDs.clear();
+	m_RepeatedUUIDs.clear();
 
 
 	cout << "Press anything to exit\n";
@@ -149,92 +115,25 @@ int main()
 	cin.get();
 	return 0;
 }
+
 /*
-Tested in Releasex64: Parallel optimization OFF
-Took: 14 seconds
-100000 UUIDs Tested
-0 Repeated UUIDs Found.
-===============================
-Tested in Releasex64: Parallel optimization ON
-Took: 14 seconds
-100000 UUIDs Tested
-0 Repeated UUIDs Found.
-===============================
-Tested in Releasex64: Parallel optimization ON
-Took: 1728 seconds (28.8‬ minutes)
-1000000 UUIDs Tested
-0 Repeated UUIDs Found.
-Test Finished.
-==========================
-Took: 1443 seconds (24mins)
-1000000 UUIDs Tested
-0 Repeated UUIDs Found.
+Latest test on 05-05-2020 11:26pm
+Build Type:			Release x64
+Optimization:		ON
+UUIDs Generated:	10,000,000 (100 Million)
+UUIDs Repeated:		0
+Test Duration:		14063 milliseconds
+Memory Allocated due test: Each uuid has 37 bytes, so
+37 * 10,000,000 uuids = 370,000,000‬ bytes
+370,000,000‬ bytes / 1024 / 1024 = 352 MB
+
+~352MB for vecUUDs which holds generated uuids
+~352MB for m_RepeatedUUIDs which holds generated uuids minus repeated ones
+~300MB for uuid generator library and other stuff
+
+Approximately the entire test takes ~1GO of memory
 */
 
 #else
 #error Enable C++17 or remove this macro check
 #endif
-
-/*
-Test Took: 194370 milliseconds (3.2395 minutes)
-100000 UUIDs Tested
-Found 0 Repeated UUIDs.
-*/
-
-
-/*
-std::string generateUUID()
-{
-	char* uuid = new char[UUID4_LEN];
-	uuid4_init();
-	uuid4_generate(uuid);
-	std::string uuidStr(uuid);
-	delete uuid;
-	return uuidStr;
-}
-
-
-void TestUUIDsRepetition()
-{
-	auto time1 = std::chrono::system_clock::now();
-
-	///
-	// Generate and store UUIDs in uuids.txt
-	std::ofstream outFile("uuids.txt", std::ios_base::app);
-	std::vector<std::string> vUUIDs;
-	for (size_t i = 0; i < MAX_UUIDS_TEST; i++)
-	{
-		std::string* uuid = new std::string(generateUUID());
-		vUUIDs.push_back(*uuid);
-		outFile << *uuid << '\n';
-		uuid->clear();
-		delete uuid;
-	}
-	outFile.close();
-
-
-	//check if there is repeated uuids
-	size_t numRepeated = 0, size = vUUIDs.size();
-	for (size_t i = 0; i < size; i++)
-	{
-		//Test the current uuid with all other uuids
-		for (size_t j = i + 1; j < size; j++)
-		{
-			if (vUUIDs[i] == vUUIDs[j])
-				numRepeated++;
-		}
-		//once the uuid tested with all other uuids, clear it
-		//deallocate some memory
-		vUUIDs[i].clear();
-	}
-	///
-
-	auto time2 = std::chrono::system_clock::now();
-	auto diff = time2 - time1;
-	std::cout << "Test Took: " << std::chrono::duration_cast<std::chrono::milliseconds>(diff).count() <<
-		" milliseconds \n" << MAX_UUIDS_TEST << " UUIDs Tested\n"
-		<< "Found " << numRepeated << " Repeated UUIDs." << std::endl;
-
-	vUUIDs.clear();
-}
-*/
