@@ -6,7 +6,7 @@ Optimization:		ON
 UUIDs Generated:	10,000,000 (10 Million)
 UUIDs Repeated:		0
 Test Duration:		14063 milliseconds
-Memory Allocated due test: Each uuid has 37 bytes, so
+Memory Allocated during test: Each uuid has 37 bytes, so
 37 * 10,000,000 uuids = 370,000,000‬ bytes
 370,000,000‬ bytes / 1024 / 1024 = 352 MB
 
