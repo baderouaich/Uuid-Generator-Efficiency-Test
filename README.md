@@ -14,7 +14,7 @@ Memory Allocated during test: Each uuid has 37 bytes, so
 ~352MB for m_RepeatedUUIDs which holds generated uuids minus repeated ones
 ~300MB for uuid generator library and other stuff
 
-Approximately the entire test takes ~1GO of memory
+Approximately the entire test occupies ~1GO of memory
 </pre> 
 <br>
 CPU Info<br>
