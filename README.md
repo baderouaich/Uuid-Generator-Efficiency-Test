@@ -3,7 +3,7 @@
 Latest test on 05-05-2020 11:26pm
 Build Type:			Release x64
 Optimization:		ON
-UUIDs Generated:	10,000,000 (100 Million)
+UUIDs Generated:	10,000,000 (10 Million)
 UUIDs Repeated:		0
 Test Duration:		14063 milliseconds
 Memory Allocated due test: Each uuid has 37 bytes, so
