@@ -6,6 +6,7 @@
  */
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <stdint.h>
 
 #if defined(_WIN32)
@@ -44,18 +45,20 @@ int uuid4_init(void) {
   }
 
 #elif defined(_WIN32)
-  int res;
-  HCRYPTPROV hCryptProv;
-  res = CryptAcquireContext(
-    &hCryptProv, NULL, NULL, PROV_RSA_FULL, CRYPT_VERIFYCONTEXT);
-  if (!res) {
-    return UUID4_EFAILURE;
-  }
-  res = CryptGenRandom(hCryptProv, (DWORD) sizeof(seed), (PBYTE) seed);
-  CryptReleaseContext(hCryptProv, 0);
-  if (!res) {
-    return UUID4_EFAILURE;
-  }
+    int res;
+    HCRYPTPROV hCryptProv;
+    res = CryptAcquireContext(
+        &hCryptProv, NULL, NULL, PROV_RSA_FULL, CRYPT_VERIFYCONTEXT);
+    if (!res) {
+        return UUID4_EFAILURE;
+    }
+    res = CryptGenRandom(hCryptProv, (DWORD)sizeof(seed), (PBYTE)seed);
+    CryptReleaseContext(hCryptProv, 0);
+    if (!res) {
+        return UUID4_EFAILURE;
+    }
+    //printf("seed[0]: %zu\nseed[1]: %zu\n", seed[0], seed[1]);
+    
 
 #else
   #error "unsupported platform"
